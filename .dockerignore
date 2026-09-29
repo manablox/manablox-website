@@ -1,0 +1,16 @@
+# The image builds for itself: the host's install and build output stay out of the context.
+node_modules
+.pnpm-store
+dist
+dist-ssr
+*.log
+
+.git
+.github
+.remember
+.claude
+.env
+.env.*
+!.env.example
+# The development registry; the image build gets it as MANABLOX_REGISTRY instead.
+.npmrc

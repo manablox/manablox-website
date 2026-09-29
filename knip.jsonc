@@ -1,0 +1,20 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
+  // Knip's vite plugin would load vite.config.ts, which fetches the changelog and the
+  // prices; the entries are listed here instead.
+  "vite": false,
+  "entry": [
+    "vite.config.ts",
+    "src/entry-client.ts",
+    // Built by `vite build --ssr`; scripts/prerender.mjs imports its output.
+    "src/entry-server.ts",
+    "scripts/*.mjs"
+  ],
+  "project": ["src/**/*.{ts,vue}", "build/**/*.ts", "scripts/**/*.mjs"],
+  // Loaded through CSS url() in src/styles/base.css.
+  "ignoreDependencies": [
+    "@fontsource-variable/bricolage-grotesque",
+    "@fontsource-variable/jetbrains-mono",
+    "@fontsource-variable/manrope"
+  ]
+}

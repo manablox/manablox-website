@@ -1,0 +1,59 @@
+{
+  "name": "manablox-website",
+  "version": "0.50.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "description": "The Manablox marketing website, manablox.io",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manablox/manablox-website.git"
+  },
+  "type": "module",
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "node build/changelog.ts --fetch && node build/prices.ts --fetch && vite build --ssrManifest && vite build --ssr src/entry-server.ts --outDir dist-ssr && node scripts/prerender.mjs",
+    "preview": "vite preview",
+    "links": "node scripts/check-links.mjs dist",
+    "links:cross": "node scripts/check-external-docs-links.mjs dist",
+    "typecheck": "vue-tsc --noEmit",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "knip": "knip --no-progress",
+    "check": "pnpm lint && pnpm knip && pnpm typecheck && pnpm build && pnpm links",
+    "changelog:update": "node build/changelog.ts --write",
+    "share-image": "node scripts/share-image.mjs",
+    "dev:up": "./scripts/dev.sh up",
+    "dev:down": "./scripts/dev.sh down",
+    "dev:logs": "./scripts/dev.sh logs",
+    "dev:reset": "./scripts/dev.sh reset",
+    "docker:build": "./scripts/docker-build.sh",
+    "lock:refresh": "./scripts/lock-refresh.sh",
+    "prepare": "node scripts/git-hooks.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.2.8",
+    "@fontsource-variable/manrope": "^5.3.0",
+    "vue": "catalog:",
+    "vue-router": "catalog:"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "catalog:",
+    "@manablox/config-typescript": "^0.50.0",
+    "@types/node": "catalog:",
+    "@vitejs/plugin-vue": "catalog:",
+    "knip": "catalog:",
+    "playwright": "catalog:",
+    "simple-git-hooks": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vue-tsc": "catalog:"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm biome check --staged --no-errors-on-unmatched"
+  }
+}

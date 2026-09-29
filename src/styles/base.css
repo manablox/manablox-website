@@ -1,0 +1,312 @@
+/* Latin only: the site has no other script. index.html preloads the display face. */
+@font-face {
+  font-family: "Bricolage Grotesque Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  font-stretch: 75% 100%;
+  src: url("@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-standard-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Manrope Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  src: url("@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "JetBrains Mono Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url("@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* The admin's palette, token for token: a vibrant warm orange, an iris purple, ochre,
+   and cool grey neutrals (hue 265). The brand colours are the same in both themes; only
+   the grounds, the text and the edges move, which `light-dark()` does from one
+   definition. Anything sitting on a brand colour keeps `--on-accent`, which never moves. */
+:root {
+  color-scheme: light dark;
+
+  --white: #ffffff;
+  /* The logo's brace. */
+  --brand: oklch(68% 0.175 50);
+  --brand-deep: oklch(58% 0.156 47);
+  --brand-bright: oklch(80% 0.132 58);
+  /* The logo's block. */
+  --iris: oklch(60% 0.26 303);
+  --iris-deep: oklch(48% 0.245 304);
+  --lilac: oklch(70% 0.185 302);
+  --ochre: oklch(76% 0.14 92);
+  --on-accent: oklch(19% 0.012 265);
+  /* Small accents that only ever appear on a dark ground. */
+  --accent-night: oklch(80% 0.132 58);
+
+  /* Grounds and surfaces. */
+  --paper: light-dark(oklch(98.4% 0.002 265), oklch(14.5% 0.006 265));
+  --paper-2: light-dark(oklch(94.5% 0.004 265), oklch(27% 0.008 265));
+  --surface: light-dark(oklch(100% 0 0), oklch(20% 0.007 265));
+  /* Sections and panels that are dark in both themes. */
+  --night: light-dark(oklch(19% 0.012 265), oklch(10.5% 0.006 265));
+  --console: light-dark(oklch(19% 0.012 265), oklch(10.5% 0.006 265));
+  --console-2: light-dark(oklch(27% 0.008 265), oklch(16.5% 0.007 265));
+
+  /* Text. */
+  --ink: light-dark(oklch(20% 0.007 265), oklch(96.5% 0.003 265));
+  --ink-soft: light-dark(oklch(48% 0.008 265), oklch(73% 0.006 265));
+  --accent-text: light-dark(oklch(49% 0.137 45), oklch(80% 0.132 58));
+
+  /* Edges: the hairline outline and the hard offset shadow the cards are drawn with. */
+  --edge: light-dark(oklch(20% 0.007 265), rgb(255 255 255 / 0.22));
+  --edge-shadow: light-dark(oklch(20% 0.007 265), rgb(0 0 0 / 0.55));
+  --line: light-dark(rgb(17 20 28 / 0.12), rgb(255 255 255 / 0.12));
+  --line-strong: light-dark(rgb(17 20 28 / 0.22), rgb(255 255 255 / 0.26));
+
+  /* Solid buttons and pills, the inverse of the page. */
+  --solid: light-dark(oklch(20% 0.007 265), oklch(96.5% 0.003 265));
+  --solid-ink: light-dark(oklch(100% 0 0), oklch(20% 0.007 265));
+
+  /* Tints, behind body text. */
+  --brand-soft: light-dark(oklch(93% 0.048 68), oklch(32% 0.097 42));
+  --iris-soft: light-dark(oklch(94% 0.033 300), oklch(32% 0.165 305));
+  --ochre-soft: light-dark(oklch(92% 0.08 95), oklch(34% 0.07 88));
+  --lilac-soft: light-dark(oklch(94% 0.04 302), oklch(30% 0.12 304));
+  /* Green means one thing only: something succeeded. */
+  --ok: light-dark(oklch(45% 0.12 150), oklch(75% 0.13 150));
+  --ok-soft: light-dark(oklch(93% 0.05 150), oklch(30% 0.08 150));
+
+  /* Friday, the night chapter, as a chip or a swatch. */
+  --tone-night-bg: light-dark(oklch(19% 0.012 265), oklch(96.5% 0.003 265));
+  --tone-night-on: light-dark(oklch(76% 0.14 92), oklch(19% 0.012 265));
+
+  /* Code, on a light card in one theme and a dark one in the other. */
+  --code-keyword: light-dark(oklch(48% 0.245 304), oklch(70% 0.185 302));
+  --code-call: light-dark(oklch(49% 0.137 45), oklch(80% 0.132 58));
+  --code-string: light-dark(oklch(45% 0.12 150), oklch(75% 0.13 150));
+
+  --grid-line: light-dark(oklch(68% 0.175 50 / 0.1), oklch(74% 0.175 54 / 0.16));
+  --shadow: 0 12px 32px -12px light-dark(rgb(17 20 28 / 0.3), rgb(0 0 0 / 0.75));
+
+  --font-display: "Bricolage Grotesque Variable", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "Manrope Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --step--1: clamp(0.8rem, 0.78rem + 0.1vw, 0.86rem);
+  --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.1rem);
+  --step-1: clamp(1.2rem, 1.1rem + 0.5vw, 1.45rem);
+  --step-2: clamp(1.5rem, 1.3rem + 1vw, 2.1rem);
+  --step-3: clamp(2rem, 1.6rem + 2vw, 3.2rem);
+  --step-4: clamp(2.6rem, 1.8rem + 4vw, 5rem);
+  --step-5: clamp(3.2rem, 1.8rem + 7vw, 7.6rem);
+
+  --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
+  --wrap: 76rem;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* What the theme toggle writes. Without it the page follows the browser. */
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 80%;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+code,
+kbd,
+pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: var(--ochre);
+  color: var(--on-accent);
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Short uppercase labels in the utility face. */
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Call-to-action buttons in a row. */
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.4rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0 1.4rem;
+  border-radius: 999px;
+  font-weight: 800;
+  text-decoration: none;
+  transition:
+    transform 0.2s var(--ease),
+    background 0.2s,
+    box-shadow 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn--primary {
+  background: var(--brand-deep);
+  color: var(--white);
+  box-shadow: 4px 4px 0 var(--edge-shadow);
+}
+
+.btn--primary:hover {
+  box-shadow: 6px 6px 0 var(--edge-shadow);
+}
+
+.btn--ghost {
+  box-shadow: inset 0 0 0 1.5px var(--edge);
+}
+
+.btn--ghost:hover {
+  background: var(--surface);
+}
+
+/* Fades up once scrolled into view (`v-reveal`). Only with scripts, or it would never show. */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.7s var(--ease),
+    transform 0.7s var(--ease);
+}
+
+.js .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  /* Has to beat every component's own animation. */
+  *,
+  *::before,
+  *::after {
+    /* biome-ignore lint/complexity/noImportantStyles: see above */
+    animation-duration: 0.01ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: see above */
+    animation-iteration-count: 1 !important;
+    /* biome-ignore lint/complexity/noImportantStyles: see above */
+    transition-duration: 0.01ms !important;
+  }
+
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}

@@ -1,0 +1,31 @@
+# Build scripts are opt-in: each dependency that wants to run one on install must be
+# named in `allowBuilds`. Anything not listed is blocked, so a transitive package cannot
+# execute arbitrary code during `pnpm install`.
+# Dependencies are installed inside the dev container, which records its own store path
+# in `node_modules`. Without this a host `pnpm <script>` (and the pre-commit hook with it)
+# sees a mismatch and tries to purge and reinstall.
+verifyDepsBeforeRun: false
+
+allowBuilds:
+  '@biomejs/biome': true
+  esbuild: true
+  # Its postinstall only calls the same installer the root `prepare` script runs.
+  simple-git-hooks: false
+catalog:
+  '@types/node': ^26.4.1
+  '@biomejs/biome': ^2.5.14
+  # vue-tsc drives TypeScript's programmatic API, which the native 7.x compiler does not
+  # expose yet.
+  typescript: ^5.9.3
+  simple-git-hooks: ^2.13.0
+  knip: ^6.37.0
+  playwright: ^1.62.1
+  vite: ^8.2.2
+  vue: ^3.5.42
+  '@vitejs/plugin-vue': ^6.0.8
+  vue-router: ^5.3.1
+  vue-tsc: ^3.3.11
+# The `@manablox/*` packages come from the CMS's local registry in development, published
+# minutes before they are installed; pnpm would otherwise hold them back.
+minimumReleaseAgeExclude:
+  - '@manablox/*'

@@ -1,0 +1,114 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+  @font-face {
+    font-family: 'Bricolage';
+    src: url('../../node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2') format('woff2');
+    font-weight: 200 800;
+  }
+  @font-face {
+    font-family: 'Manrope';
+    src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2');
+    font-weight: 200 800;
+  }
+  @font-face {
+    font-family: 'JetBrains';
+    src: url('../../node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2') format('woff2');
+    font-weight: 100 800;
+  }
+  :root {
+    --brand: oklch(68% 0.175 50);
+    --brand-bright: oklch(80% 0.132 58);
+    --iris: oklch(60% 0.26 303);
+    --lilac: oklch(70% 0.185 302);
+    --night: oklch(14% 0.008 265);
+    --ink: oklch(97% 0.003 265);
+    --ink-soft: oklch(73% 0.006 265);
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    width: 1200px; height: 630px; overflow: hidden;
+    background: var(--night); color: var(--ink);
+    font-family: 'Manrope', sans-serif;
+    position: relative;
+  }
+  .grid {
+    position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(to right, oklch(74% 0.175 54 / 0.13) 0 1px, transparent 1px 100px),
+      repeating-linear-gradient(to bottom, oklch(74% 0.175 54 / 0.09) 0 1px, transparent 1px 100px);
+    mask-image: linear-gradient(to bottom right, #000 0%, transparent 78%);
+  }
+  .glow {
+    position: absolute; width: 760px; height: 760px; border-radius: 50%;
+    filter: blur(10px);
+  }
+  .glow--brand {
+    right: -240px; top: -300px;
+    background: radial-gradient(circle, oklch(68% 0.175 50 / 0.5) 0%, transparent 62%);
+  }
+  .glow--iris {
+    right: -180px; bottom: -380px;
+    background: radial-gradient(circle, oklch(60% 0.26 303 / 0.45) 0%, transparent 62%);
+  }
+  .frame {
+    position: relative; height: 100%;
+    padding: 62px 72px; display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .brandline { display: flex; align-items: center; gap: 18px; }
+  .wordmark {
+    font-family: 'Bricolage', sans-serif; font-weight: 700; font-size: 42px;
+    letter-spacing: -0.02em;
+  }
+  .headline {
+    font-family: 'Bricolage', sans-serif; font-weight: 700;
+    font-size: 74px; line-height: 1.05; letter-spacing: -0.035em;
+    max-width: 17ch;
+  }
+  .headline .hl { color: var(--brand-bright); }
+  .lede {
+    margin-top: 22px; font-size: 25px; line-height: 1.45; color: var(--ink-soft);
+    max-width: 46ch;
+  }
+  .footrow { display: flex; align-items: center; justify-content: space-between; gap: 32px; }
+  .cmd {
+    font-family: 'JetBrains', monospace; font-size: 25px; letter-spacing: -0.01em;
+    padding: 16px 26px; border-radius: 12px;
+    border: 1px solid oklch(100% 0 0 / 0.16); background: oklch(100% 0 0 / 0.05);
+    display: flex; align-items: center; gap: 14px; white-space: nowrap;
+  }
+  .cmd .p { color: var(--brand-bright); }
+  .site { font-size: 25px; font-weight: 600; color: var(--ink-soft); letter-spacing: 0.01em; }
+  .blocks { display: flex; gap: 10px; }
+  .blocks i { width: 34px; height: 34px; border-radius: 9px; display: block; }
+</style>
+<body>
+  <div class="grid"></div>
+  <div class="glow glow--brand"></div>
+  <div class="glow glow--iris"></div>
+  <div class="frame">
+    <div class="brandline">
+      <svg width="58" height="58" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <path d="M29 6C19.5 6 17 9 17 16v9c0 4.5-2 7-7 7 5 0 7 2.5 7 7v9c0 7 2.5 10 12 10"
+          fill="none" stroke="oklch(68% 0.175 50)" stroke-width="7.5"
+          stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="36" y="21" width="22" height="22" rx="5.5" fill="oklch(60% 0.26 303)"/>
+      </svg>
+      <span class="wordmark">Manablox</span>
+    </div>
+
+    <div>
+      <h1 class="headline">The headless CMS you install with <span class="hl">one command</span></h1>
+      <p class="lede">Model, write, automate and deliver. On your own server, on Postgres or a single SQLite file.</p>
+    </div>
+
+    <div class="footrow">
+      <div class="cmd"><span class="p">$</span> pnpm dlx @manablox/cli create my-cms</div>
+      <div class="blocks">
+        <i style="background: oklch(68% 0.175 50)"></i>
+        <i style="background: oklch(76% 0.14 92)"></i>
+        <i style="background: oklch(60% 0.26 303)"></i>
+      </div>
+    </div>
+  </div>
+</body>

@@ -1,0 +1,124 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# `@manablox/*` installs from npmjs here; the local registry is for development only.
+jobs:
+  # Everything that reads the source without running it.
+  static:
+    name: lint - dead code - typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      # No `version` input: pnpm is pinned by `packageManager` in package.json.
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Lint
+        run: pnpm lint
+
+      # Unused files, exports and dependencies; config in knip.jsonc.
+      - name: Dead code
+        run: pnpm knip
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+  # The client bundle, the server entry, every page prerendered, then every internal link
+  # of the output checked. The changelog comes from the CMS repository (CHANGELOG_URL
+  # unset), or the bundled copy when that cannot be reached; only release.yml sets
+  # CHANGELOG_STRICT.
+  build:
+    name: build - prerender - links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Build and prerender
+        env:
+          WEBSITE_URL: ${{ vars.WEBSITE_URL || 'https://manablox.io' }}
+          LICENSE_API: ${{ vars.LICENSE_API }}
+        run: pnpm build
+
+      - name: Internal links
+        run: pnpm links
+
+  # `pnpm audit` reads the lockfile and asks the registry; it needs no install.
+  security:
+    name: audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v6
+      - run: pnpm audit --audit-level high
+
+  # The production image, built and not pushed, so a broken Dockerfile or nginx config fails
+  # before the merge. release.yml pushes it.
+  image:
+    name: image - website
+    needs: [static, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: docker/Dockerfile.website
+          push: false
+          load: true
+          tags: ghcr.io/${{ github.repository_owner }}/website:ci
+          build-args: |
+            WEBSITE_URL=${{ vars.WEBSITE_URL || 'https://manablox.io' }}
+            LICENSE_PORTAL_URL=${{ vars.LICENSE_PORTAL_URL || 'https://licenses.manablox.io' }}
+            LICENSE_API=${{ vars.LICENSE_API }}
+          cache-from: type=gha,scope=website
+          cache-to: type=gha,mode=max,scope=website
+
+      # The pages answer and carry the security headers nginx sets.
+      - name: Smoke test
+        run: |
+          set -euo pipefail
+          docker run -d --name website -p 8080:80 ghcr.io/${{ github.repository_owner }}/website:ci
+          trap 'docker rm -f website >/dev/null' EXIT
+          for i in $(seq 1 20); do curl -fs -o /dev/null http://127.0.0.1:8080/ && break; sleep 1; done
+          for path in / /features /plugins /download /changelog /imprint; do
+            curl -fs -o /dev/null "http://127.0.0.1:8080$path"
+          done
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/missing)" = 404
+          headers=$(curl -sI http://127.0.0.1:8080/)
+          for header in content-security-policy x-content-type-options referrer-policy x-frame-options; do
+            grep -qi "^$header:" <<<"$headers" || { echo "::error::missing $header"; exit 1; }
+          done
+          grep -qi "^content-security-policy:.*script-src 'self' https://analytics.dev.alpenstudios.com;" <<<"$headers" ||
+            { echo "::error::the CSP lacks the default analytics origin"; exit 1; }
+
+      # ANALYTICS_ORIGIN reaches the Content-Security-Policy when the container starts.
+      - name: Analytics origin at runtime
+        run: |
+          set -euo pipefail
+          docker run -d --name website-analytics -p 8081:80 -e ANALYTICS_ORIGIN=https://stats.example.com ghcr.io/${{ github.repository_owner }}/website:ci
+          trap 'docker rm -f website-analytics >/dev/null' EXIT
+          for i in $(seq 1 20); do curl -fs -o /dev/null http://127.0.0.1:8081/ && break; sleep 1; done
+          curl -sI http://127.0.0.1:8081/ | grep -qi "^content-security-policy:.*connect-src 'self' https://stats.example.com;" ||
+            { echo "::error::ANALYTICS_ORIGIN did not reach the CSP"; exit 1; }

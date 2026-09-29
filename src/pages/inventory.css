@@ -1,0 +1,181 @@
+/* The inventory pages, /features and /plugins: the index under the intro, a group per
+   section, its cards and the closing call to action. Scoped into each page that uses it; the rules that reach
+   into child components (`:deep`) stay in the pages, since only a .vue file may hold them. */
+.index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 2.5rem;
+}
+
+.index a {
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1.5px var(--edge);
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-decoration: none;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+
+.index a:hover {
+  background: var(--c);
+  color: var(--on);
+}
+
+.t-brand {
+  --c: var(--brand);
+  --on: var(--on-accent);
+}
+
+.t-iris {
+  --c: var(--iris);
+  --on: var(--on-accent);
+}
+
+.t-ochre {
+  --c: var(--ochre);
+  --on: var(--on-accent);
+}
+
+.t-lilac {
+  --c: var(--lilac);
+  --on: var(--on-accent);
+}
+
+.t-night {
+  --c: var(--tone-night-bg);
+  --on: var(--tone-night-on);
+}
+
+.group {
+  padding-block: clamp(2.5rem, 2rem + 3vw, 4.5rem);
+  border-top: 1.5px solid var(--line);
+  scroll-margin-top: 4.5rem;
+}
+
+.group-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+  gap: clamp(1.5rem, 4vw, 4rem);
+  align-items: start;
+}
+
+.group-head {
+  position: sticky;
+  top: 6rem;
+}
+
+.swatch {
+  display: block;
+  width: 2.2rem;
+  height: 2.2rem;
+  margin-bottom: 1.1rem;
+  border-radius: 8px;
+  background: var(--c);
+  box-shadow: 3px 3px 0 var(--edge-shadow);
+}
+
+.t-night .swatch {
+  box-shadow: 3px 3px 0 var(--ochre);
+}
+
+.group-head h2 {
+  font-size: var(--step-3);
+}
+
+.group-head p {
+  margin-top: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.story-link {
+  display: inline-block;
+  margin-top: 1.1rem;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--accent-text);
+  text-underline-offset: 4px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  gap: 0.9rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  padding: 1.2rem 1.25rem 1.3rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+  transition:
+    box-shadow 0.25s,
+    transform 0.25s var(--ease);
+}
+
+.card:hover {
+  box-shadow:
+    inset 0 0 0 1.5px var(--edge),
+    4px 4px 0 var(--c);
+}
+
+.t-night .card:hover {
+  box-shadow:
+    inset 0 0 0 1.5px var(--edge),
+    4px 4px 0 var(--ochre);
+}
+
+.card h3 {
+  font-size: var(--step-1);
+  font-stretch: 85%;
+  line-height: 1.1;
+}
+
+.card p {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.cta {
+  padding-block: clamp(3.5rem, 2rem + 5vw, 6rem);
+  background: var(--iris-deep);
+  color: var(--white);
+}
+
+.cta-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: start;
+  gap: 1.4rem;
+}
+
+.cta h2 {
+  font-size: var(--step-4);
+  font-stretch: 75%;
+  max-width: 16ch;
+}
+
+.cta-link {
+  font-weight: 800;
+  text-underline-offset: 5px;
+}
+
+@media (max-width: 860px) {
+  .group-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .group-head {
+    position: static;
+  }
+}

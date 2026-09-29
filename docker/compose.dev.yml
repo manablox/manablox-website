@@ -1,0 +1,80 @@
+name: manablox-website-dev
+
+# The development environment. `pnpm dev:up` installs the dependencies and runs the website
+# in Vite's dev server on http://localhost:3005, the port this repository has in the table
+# of all Manablox stacks, so they run side by side.
+#
+# The repository is bind-mounted and nothing is masked over it: `pnpm install` runs in the
+# container, writes into the working copy, and the host reads the same `node_modules`. That
+# works because host and container are both linux/glibc on the same architecture.
+#
+# `@manablox/*` comes from the CMS's local registry. It sits on the docker network
+# `manablox-registry`, which the CMS stack creates, as `verdaccio`; the host's `.npmrc`
+# says `localhost:4873`, which inside a container is the container itself, so the install
+# names the registry on the command line, which wins over the file.
+
+x-workspace: &workspace
+  build:
+    context: ..
+    dockerfile: docker/Dockerfile.dev
+  image: manablox-website-dev
+  init: true
+  # Everything the container installs lands in the bind-mounted working copy, so it runs
+  # as the host's user or the host cannot delete what it produced. `scripts/dev.sh`
+  # exports these; 1000 is right for a single-user Linux desktop.
+  user: ${DEV_UID:-1000}:${DEV_GID:-1000}
+  working_dir: /app
+  volumes:
+    - ..:/app
+  environment: &watch-env
+    # The image's home belongs to root, which this user cannot write. Only disposable
+    # cache goes there - the pnpm store is `/app/.pnpm-store` (see Dockerfile.dev).
+    HOME: /tmp
+    # Filesystems that do not deliver inotify events over a bind mount need polling
+    # instead; on a native Linux mount it is pure overhead.
+    CHOKIDAR_USEPOLLING: ${DEV_POLL:-false}
+
+services:
+  install:
+    <<: *workspace
+    # CI=true lets pnpm replace a node_modules folder a host install left behind, which it
+    # otherwise refuses to do without a terminal.
+    environment:
+      <<: *watch-env
+      CI: 'true'
+    command:
+      - pnpm
+      - install
+      - --frozen-lockfile
+      - --config.@manablox:registry=http://verdaccio:4873/
+    networks: [default, manablox-registry]
+
+  # The marketing website in Vite's dev server; `pnpm build` prerenders it to static HTML.
+  website:
+    <<: *workspace
+    restart: unless-stopped
+    # `--host` makes Vite listen on the container's interface instead of its loopback;
+    # without it the published port answers nothing.
+    command: ['pnpm', 'dev', '--host', '0.0.0.0']
+    env_file: [../.env]
+    environment:
+      <<: *watch-env
+      PORT: '3005'
+    ports: ['3005:3005']
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3005/').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 3s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+    depends_on:
+      install:
+        condition: service_completed_successfully
+
+networks:
+  manablox-registry:
+    external: true

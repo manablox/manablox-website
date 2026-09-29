@@ -1,0 +1,57 @@
+# syntax=docker/dockerfile:1.7
+
+# The marketing website: built and prerendered to plain files, served by nginx
+# (docker/nginx.conf). At runtime it reads ANALYTICS_ORIGIN (default below), the analytics
+# server the Content-Security-Policy allows.
+#
+# `pnpm docker:build` builds it (scripts/docker-build.sh); CI and release.yml build the same
+# file with the docker actions.
+
+FROM node:24-bookworm-slim AS build
+ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH
+RUN corepack enable
+WORKDIR /app
+# `CI` keeps pnpm non-interactive: without it, an install that wants to replace a
+# `node_modules` directory aborts rather than prompting.
+ENV CI=true
+
+# The registry `@manablox/*` installs from. Unset it is npmjs; `pnpm docker:build` passes the
+# CMS's local registry in development (scripts/docker-build.sh).
+ARG MANABLOX_REGISTRY
+# The manifests first, so a change to the source leaves the install layer cached. The
+# `prepare` script installs the git hooks; it finds no git here and leaves them alone.
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY scripts/git-hooks.mjs scripts/
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --frozen-lockfile ${MANABLOX_REGISTRY:+--config.@manablox:registry=$MANABLOX_REGISTRY}
+
+COPY . .
+# Absolute URLs (canonical links, the sitemap) need the deployed origin at build time. The
+# website is only ever deployed at one origin, so that is the default, and it links the
+# production license portal. LICENSE_API, the API it reads the premium plugins' prices from,
+# has no default: empty, the build fetches nothing and the pages say "Paid plugin".
+# CHANGELOG_URL empty is the CMS repository's CHANGELOG.md on main (build/changelog.ts);
+# CHANGELOG_STRICT=1 (release.yml) fails the build when it cannot be fetched instead of
+# using the bundled copy. ANALYTICS_ORIGIN is where the site loads the analytics script
+# from; give the container the same value at runtime.
+ARG WEBSITE_URL=https://manablox.io
+ARG LICENSE_PORTAL_URL=https://licenses.manablox.io
+ARG LICENSE_API
+ARG CHANGELOG_URL
+ARG CHANGELOG_STRICT
+ARG ANALYTICS_ORIGIN
+RUN for name in WEBSITE_URL LICENSE_PORTAL_URL LICENSE_API CHANGELOG_URL CHANGELOG_STRICT ANALYTICS_ORIGIN; do \
+      eval "[ -n \"\$$name\" ]" || unset "$name"; \
+    done \
+ && pnpm build \
+ && pnpm links
+
+FROM nginx:1.27-alpine AS runtime
+COPY --from=build /app/dist /usr/share/nginx/html
+# nginx fills in `${ANALYTICS_ORIGIN}` when it starts (its templates folder), and only that:
+# the config's own `$uri` and friends stay as they are.
+COPY docker/nginx.conf /etc/nginx/templates/default.conf.template
+ENV ANALYTICS_ORIGIN=https://analytics.dev.alpenstudios.com \
+    NGINX_ENVSUBST_FILTER=ANALYTICS_ORIGIN
+EXPOSE 80
+HEALTHCHECK --interval=15s --timeout=3s CMD wget -qO- http://127.0.0.1/ >/dev/null || exit 1

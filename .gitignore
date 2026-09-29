@@ -1,0 +1,21 @@
+node_modules/
+.pnpm-store/
+dist/
+dist-ssr/
+*.log
+.env
+.env.*
+!.env.example
+# The local registry for development (README.md, "Development")
+.npmrc
+.remember
+
+# Agent worktrees
+.claude/worktrees/
+
+# Local and generated files, ignored in every Manablox repository
+docker/data/
+test-results/
+.turbo/
+.astro/
+coverage/

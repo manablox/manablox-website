@@ -1,0 +1,6 @@
+# The build overwrites this file with the same rules plus the sitemap of the origin it
+# was built for. This copy is what the dev server answers with.
+User-agent: *
+Allow: /
+
+Sitemap: https://manablox.io/sitemap.xml

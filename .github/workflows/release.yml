@@ -1,0 +1,68 @@
+name: Release
+
+# Publishing is deliberate, not a side effect of a push: the release runs when someone asks
+# for it.
+on:
+  workflow_dispatch:
+    inputs:
+      latest:
+        description: 'Also move the latest tag'
+        type: boolean
+        default: true
+      dry-run:
+        description: 'Build the image, but push nothing'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  # The image goes to the GitHub Container Registry.
+  packages: write
+
+jobs:
+  # ghcr.io/manablox/website at the version in package.json. The build reads the production
+  # origin, the license portal and the license API from the repository variables, and fails
+  # when the CMS changelog cannot be fetched (CHANGELOG_STRICT) rather than shipping the
+  # bundled copy.
+  image:
+    name: image - website
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - id: version
+        run: echo "version=$(node -p 'require("./package.json").version')" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Log in to ghcr.io
+        if: ${{ !inputs.dry-run }}
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/website
+          tags: |
+            type=semver,pattern={{version}},value=${{ steps.version.outputs.version }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ steps.version.outputs.version }}
+            type=raw,value=latest,enable=${{ inputs.latest }}
+
+      - uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: docker/Dockerfile.website
+          push: ${{ !inputs.dry-run }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          provenance: mode=max
+          build-args: |
+            WEBSITE_URL=${{ vars.WEBSITE_URL || 'https://manablox.io' }}
+            LICENSE_PORTAL_URL=${{ vars.LICENSE_PORTAL_URL || 'https://licenses.manablox.io' }}
+            LICENSE_API=${{ vars.LICENSE_API }}
+            CHANGELOG_STRICT=1
+          cache-from: type=gha,scope=website

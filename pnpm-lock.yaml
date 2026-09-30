@@ -202,7 +202,7 @@ packages:
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
   '@manablox/config-typescript@0.50.0':
-    resolution: {integrity: sha512-2I7EuHKsI7Lfj6EjfexX9E3mkonmIo+r5tA3zfxgz2kjVk7n78DxeqlWWThZRWE6YnOc5arkZOCwti2HwG5eag==}
+    resolution: {integrity: sha512-LKTfo51GWtsGSxYkeN9m5+H85qpva59PjpihZ+rMOdx+Qwgz0Mqexl0v6PJcwpSps2CIggtIh3AHNCkYgCZ5gw==}
     peerDependencies:
       drizzle-kit: ^0.31.10
       tsdown: ^0.23.0

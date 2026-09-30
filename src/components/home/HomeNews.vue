@@ -44,7 +44,7 @@ const points = [
         <div class="links">
           <a :href="`${site.docs}/site/`" class="link">Read the guide</a>
           <RouterLink to="/plugins#website" class="link">The website plugin</RouterLink>
-          <RouterLink to="/changelog" class="link">Everything in 0.25</RouterLink>
+          <RouterLink to="/changelog" class="link">Everything in {{ site.version }}</RouterLink>
         </div>
       </div>
 

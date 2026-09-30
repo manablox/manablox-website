@@ -2,7 +2,7 @@
 import PageIntro from '~/components/PageIntro.vue';
 import RichText from '~/components/RichText.vue';
 import SectionIcon from '~/components/SectionIcon.vue';
-import { releases } from '~/content/changelog.ts';
+import { releases, type SectionIcon as SectionIconName } from '~/content/changelog.ts';
 import { site } from '~/site.ts';
 
 const MONTHS = [
@@ -28,6 +28,15 @@ function longDate(iso: string): string {
 }
 
 const anchor = (version: string) => `v${version.replace(/\./g, '-')}`;
+
+/** Kinds of change keep their own colour; feature groups take the site's tones in turn. */
+const KINDS: readonly SectionIconName[] = ['highlights', 'upgrade', 'fixed', 'breaking'];
+const TONES = ['brand', 'iris', 'ochre', 'lilac', 'ok'] as const;
+const toneOf = (icon: SectionIconName, index: number) =>
+  KINDS.includes(icon) ? `change--${icon}` : `tone--${TONES[index % TONES.length]}`;
+
+/** A release long enough to need a way in lists its sections first. */
+const MIN_SECTIONS_FOR_INDEX = 4;
 </script>
 
 <template>
@@ -66,12 +75,28 @@ const anchor = (version: string) => `v${version.replace(/\./g, '-')}`;
           <RichText :parts="paragraph" />
         </p>
 
+        <nav
+          v-if="release.sections.length >= MIN_SECTIONS_FOR_INDEX"
+          class="groups"
+          :aria-label="`Sections of ${release.version}`"
+        >
+          <a
+            v-for="(section, s) in release.sections"
+            :key="section.id"
+            :href="`#${anchor(release.version)}-${section.id}`"
+            :class="toneOf(section.icon, s)"
+          >
+            {{ section.title }}
+          </a>
+        </nav>
+
         <section
-          v-for="section in release.sections"
-          :key="section.title"
+          v-for="(section, s) in release.sections"
+          :id="`${anchor(release.version)}-${section.id}`"
+          :key="section.id"
           v-reveal
           class="change"
-          :class="`change--${section.icon}`"
+          :class="toneOf(section.icon, s)"
         >
           <h3 class="change-title">
             <span class="icon"><SectionIcon :name="section.icon" /></span>
@@ -82,7 +107,7 @@ const anchor = (version: string) => `v${version.replace(/\./g, '-')}`;
           </p>
           <ul
             v-if="section.items.length"
-            :class="section.icon === 'highlights' ? 'cards' : 'items'"
+            :class="section.items.every((item) => item.title) ? 'cards' : 'items'"
           >
             <li v-for="(item, i) in section.items" :key="i">
               <strong v-if="item.title" class="item-title">{{ item.title }}</strong>
@@ -174,32 +199,100 @@ const anchor = (version: string) => `v${version.replace(/\./g, '-')}`;
   line-height: 1.5;
 }
 
+.groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.groups a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem 0.4rem 0.6rem;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1.5px var(--edge);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    transform 0.2s var(--ease);
+}
+
+.groups a::before {
+  content: "";
+  width: 0.7rem;
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: var(--tone);
+}
+
+.groups a:hover,
+.groups a:focus-visible {
+  background: var(--tone);
+  color: var(--tone-on);
+  transform: translateY(-2px);
+}
+
+.groups a:hover::before,
+.groups a:focus-visible::before {
+  background: var(--tone-on);
+}
+
 .change {
   --tone: var(--ink);
   --tone-soft: var(--paper-2);
-  --tone-on: var(--ink);
+  --tone-on: var(--surface);
+  position: relative;
   padding: clamp(1.25rem, 1rem + 1.5vw, 2rem);
   border-radius: 20px;
-  background: var(--surface);
-  box-shadow: inset 0 0 0 1.5px var(--edge);
+  background: color-mix(in oklch, var(--tone-soft) 70%, var(--surface));
+  box-shadow:
+    inset 0 0 0 1.5px var(--edge),
+    5px 5px 0 var(--tone);
+  scroll-margin-top: 6rem;
 }
 
+.tone--brand,
 .change--highlights {
   --tone: var(--brand);
   --tone-soft: var(--brand-soft);
   --tone-on: var(--on-accent);
 }
 
-.change--upgrade {
-  --tone: var(--iris-deep);
+.tone--iris {
+  --tone: var(--iris);
   --tone-soft: var(--iris-soft);
   --tone-on: var(--white);
 }
 
+.tone--ochre,
 .change--fixed {
   --tone: var(--ochre);
   --tone-soft: var(--ochre-soft);
   --tone-on: var(--on-accent);
+}
+
+.tone--lilac {
+  --tone: var(--lilac);
+  --tone-soft: var(--lilac-soft);
+  --tone-on: var(--on-accent);
+}
+
+.tone--ok {
+  --tone: var(--ok);
+  --tone-soft: var(--ok-soft);
+  --tone-on: light-dark(var(--white), var(--on-accent));
+}
+
+.change--upgrade {
+  --tone: var(--iris-deep);
+  --tone-soft: var(--iris-soft);
+  --tone-on: var(--white);
 }
 
 .change--breaking {
@@ -212,8 +305,9 @@ const anchor = (version: string) => `v${version.replace(/\./g, '-')}`;
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  margin-bottom: 1.1rem;
+  margin-bottom: 1.25rem;
   font-size: var(--step-2);
+  line-height: 1.1;
 }
 
 .icon {
@@ -225,6 +319,8 @@ const anchor = (version: string) => `v${version.replace(/\./g, '-')}`;
   border-radius: 12px;
   background: var(--tone);
   color: var(--tone-on);
+  box-shadow: 3px 3px 0 var(--edge-shadow);
+  transform: rotate(-4deg);
 }
 
 .change-text {
@@ -247,7 +343,7 @@ const anchor = (version: string) => `v${version.replace(/\./g, '-')}`;
 
 .cards {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
   gap: 0.9rem;
   margin: 0;
   padding: 0;
@@ -255,21 +351,47 @@ const anchor = (version: string) => `v${version.replace(/\./g, '-')}`;
 }
 
 .cards li {
-  padding: 1rem 1.1rem;
+  position: relative;
+  padding: 1.1rem 1.2rem 1.2rem;
   border-radius: var(--radius);
-  background: var(--tone-soft);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
   line-height: 1.5;
   color: var(--ink-soft);
+  transition:
+    box-shadow 0.25s,
+    transform 0.25s var(--ease);
+}
+
+.cards li:hover {
+  box-shadow:
+    inset 0 0 0 1.5px var(--edge),
+    4px 4px 0 var(--tone);
+  transform: translate(-2px, -2px);
 }
 
 .cards .item-title {
-  display: block;
-  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  margin-bottom: 0.4rem;
   color: var(--ink);
   font-family: var(--font-display);
   font-size: var(--step-1);
+  font-stretch: 85%;
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.15;
+}
+
+.cards .item-title::before {
+  content: "";
+  flex: none;
+  width: 0.6rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--tone);
+  box-shadow: 0 0 0 1.5px var(--edge);
+  transform: translateY(-0.1em);
 }
 
 .items .item-title {

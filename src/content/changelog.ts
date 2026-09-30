@@ -7,7 +7,26 @@ export type Inline =
   | { kind: 'strong'; text: string }
   | { kind: 'link'; text: string; href: string };
 
-export type SectionIcon = 'highlights' | 'upgrade' | 'fixed' | 'breaking' | 'other';
+/** The kind of change, then the topic of a feature group; `other` when nothing matches. */
+export type SectionIcon =
+  | 'highlights'
+  | 'upgrade'
+  | 'fixed'
+  | 'breaking'
+  | 'start'
+  | 'model'
+  | 'write'
+  | 'media'
+  | 'deliver'
+  | 'team'
+  | 'spaces'
+  | 'automation'
+  | 'admin'
+  | 'hosting'
+  | 'running'
+  | 'extend'
+  | 'premium'
+  | 'other';
 
 /** A list entry; a leading **bold** run becomes its title. */
 interface ChangelogItem {
@@ -16,6 +35,8 @@ interface ChangelogItem {
 }
 
 interface ChangelogSection {
+  /** The anchor of the section, unique within its release. */
+  id: string;
   title: string;
   icon: SectionIcon;
   paragraphs: Inline[][];
@@ -68,13 +89,38 @@ function parseItem(text: string): ChangelogItem {
   return { title: first.text.replace(/[.:]$/, ''), parts: rest };
 }
 
+/** A section title's words, first match wins: the kind of change before the topic. */
+const ICONS: [RegExp, SectionIcon][] = [
+  [/highlight|\bnew\b/, 'highlights'],
+  [/breaking/, 'breaking'],
+  [/upgrade|good to know/, 'upgrade'],
+  [/\bfix/, 'fixed'],
+  [/getting started|install/, 'start'],
+  [/model|content type/, 'model'],
+  [/writ|publish|edit/, 'write'],
+  [/image|file|media/, 'media'],
+  [/website|deliver|\bapi/, 'deliver'],
+  [/team|security|account/, 'team'],
+  [/space|staging|backup/, 'spaces'],
+  [/automat|workflow|webhook/, 'automation'],
+  [/admin/, 'admin'],
+  [/hosting|provider/, 'hosting'],
+  [/running|operat|database/, 'running'],
+  [/extend|plugin authors|developer/, 'extend'],
+  [/premium/, 'premium'],
+];
+
 function iconFor(title: string): SectionIcon {
   const t = title.toLowerCase();
-  if (t.includes('highlight') || t.includes('new')) return 'highlights';
-  if (t.includes('breaking')) return 'breaking';
-  if (t.includes('upgrade') || t.includes('good to know')) return 'upgrade';
-  if (t.includes('fix')) return 'fixed';
-  return 'other';
+  return ICONS.find(([pattern]) => pattern.test(t))?.[1] ?? 'other';
+}
+
+/** `Spaces, staging and backups` as `spaces-staging-and-backups`. */
+function slug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 }
 
 /** Splits text into paragraphs; lines of one paragraph are joined. */
@@ -97,12 +143,22 @@ function parseChangelog(markdown: string): Release[] {
       const before: string[] = [];
       const items: string[] = [];
       const after: string[] = [];
+      // An indented line right after an item, or after its last continuation, continues it.
+      let inItem = false;
       for (const line of body) {
-        if (line.startsWith('- ')) items.push(line.slice(2));
-        else if (items.length) after.push(line);
-        else before.push(line);
+        if (line.startsWith('- ')) {
+          items.push(line.slice(2));
+          inItem = true;
+        } else if (inItem && /^\s+\S/.test(line)) {
+          items[items.length - 1] += ` ${line.trim()}`;
+        } else {
+          inItem = false;
+          if (items.length) after.push(line);
+          else before.push(line);
+        }
       }
       return {
+        id: slug(title),
         title: title.trim(),
         icon: iconFor(title),
         paragraphs: paragraphs(before).map(parseInline),

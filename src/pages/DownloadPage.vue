@@ -148,8 +148,8 @@ const frameworks = [
         <div v-reveal class="other-card">
           <h3>Premium plugins</h3>
           <p>
-            Website and AI are commercial plugins and need a license key. This opens the
-            checkout in your browser, starts a free trial or a subscription, and writes the key
+            Website and AI are commercial plugins. They run without a key on your own
+            computer; production needs a license key. This opens the checkout in your browser, starts a free trial or a subscription, and writes the key
             into <code>.env</code>. A key bought earlier goes in with
             <code>manablox license add</code>.
           </p>

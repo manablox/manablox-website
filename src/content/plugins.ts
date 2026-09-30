@@ -19,8 +19,9 @@ export interface FeaturePlugin {
   story?: { hash: string; label: string };
   docs: string;
   /**
-   * A paid plugin under the commercial license: it needs a license key, bought per
-   * subscription on the license portal. The others are MIT licensed like the core.
+   * A paid plugin under the commercial license: free in development (private hosts, no key),
+   * in production it needs a license key, bought per subscription on the license portal. The
+   * others are MIT licensed like the core.
    */
   premium?: boolean;
   /** What changes when another plugin is there too. */

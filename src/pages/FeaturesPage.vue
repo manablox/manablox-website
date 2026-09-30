@@ -61,7 +61,7 @@ const total = featureGroups.reduce((sum, group) => sum + group.items.length, 0);
         <p>
           Pick them when you create an instance, or add one later with
           <code>manablox plugin install</code>. Each works on its own. Website and AI are
-          premium plugins with a free trial; see <RouterLink to="/plugins#premium">how licenses work</RouterLink>.
+          premium plugins, free in development and with a free trial for production; see <RouterLink to="/plugins#premium">how licenses work</RouterLink>.
         </p>
       </header>
       <PluginCards />

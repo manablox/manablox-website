@@ -36,7 +36,7 @@ const steps = [
     Manablox starts as a lean core. Four first-party plugins add the rest: a designed
     website, AI, workflows and webhooks. Each works on its own, and some do more together.
     Workflows and webhooks are MIT licensed like the core; website and AI are commercial
-    premium plugins, with a free trial.
+    premium plugins, free in development and with a free trial for production.
     <template #after>
       <nav class="index" aria-label="Plugins">
         <a v-for="plugin in plugins" :key="plugin.id" :href="`#${plugin.id}`" :class="`t-${plugin.tone}`">
@@ -89,8 +89,8 @@ const steps = [
             <a :href="premiumOffer(plugin.id).buy" class="offer-buy">Buy</a>
           </p>
           <p class="offer-note">
-            {{ premiumOffer(plugin.id).trial }}. Every instance needs a key, development ones too;
-            those take no seat. <a href="#premium">How licenses work</a>
+            {{ premiumOffer(plugin.id).trial }}. Free in development: it runs without a key on
+            private hosts. <a href="#premium">How licenses work</a>
           </p>
         </div>
         <ul class="with" aria-label="Together with other plugins">
@@ -117,13 +117,14 @@ const steps = [
     <div class="wrap premium-grid">
       <div>
         <p class="label">Premium plugins</p>
-        <h2 id="premium-title">Website and AI need a license key.</h2>
+        <h2 id="premium-title">Website and AI need a license key in production.</h2>
         <p>
           Manablox is open source under the MIT license: the core, the admin, the CLI, the
           SDKs, the workflows and webhooks plugins, and the license plugin that checks the
           keys. The website and AI plugins are commercial, under their own license. They are
           paid by subscription, monthly or yearly, each on its own or both as a bundle, with a
-          free trial of each plugin. Without a key they stay installed but locked; your data
+          free trial of each plugin. On your laptop and on staging with private hosts they run
+          without a key. In production, without a key they stay installed but locked; your data
           stays either way, and designed sites keep rendering.
         </p>
         <p class="docs-links">
@@ -143,8 +144,8 @@ const steps = [
           <p>Each seat of a subscription covers one public production instance. Move a key by deactivating the old instance.</p>
         </li>
         <li v-reveal>
-          <h3>Development instances too</h3>
-          <p>Every instance needs a key, your laptop and staging on private hosts as well. Development instances take no seat.</p>
+          <h3>Free in development</h3>
+          <p>Your laptop and staging on private hosts run the premium plugins without a key. A key works there too, and takes no seat.</p>
         </li>
         <li v-reveal>
           <h3>Checked offline</h3>

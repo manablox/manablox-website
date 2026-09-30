@@ -4,6 +4,7 @@ import InlineCode from '~/components/InlineCode.vue';
 import PageIntro from '~/components/PageIntro.vue';
 import PluginCards from '~/components/PluginCards.vue';
 import { featureGroups, notBuilt, stack } from '~/content/features.ts';
+import { premiumContact, premiumOnSale } from '~/content/plugins.ts';
 import { chapters } from '~/content/week.ts';
 import { site } from '~/site.ts';
 
@@ -61,7 +62,9 @@ const total = featureGroups.reduce((sum, group) => sum + group.items.length, 0);
         <p>
           Pick them when you create an instance, or add one later with
           <code>manablox plugin install</code>. Each works on its own. Website and AI are
-          premium plugins, free in development and with a free trial for production; see <RouterLink to="/plugins#premium">how licenses work</RouterLink>.
+          premium plugins,
+          <template v-if="premiumOnSale">free in development and with a free trial for production; see <RouterLink to="/plugins#premium">how licenses work</RouterLink>.</template>
+          <template v-else>available soon: <a :href="premiumContact('premium')">contact me</a> if you want to try them out.</template>
         </p>
       </header>
       <PluginCards />

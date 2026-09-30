@@ -3,7 +3,6 @@ import { type Component, defineAsyncComponent, hydrateOnVisible } from 'vue';
 import HomeCast from '~/components/home/HomeCast.vue';
 import HomeGame from '~/components/home/HomeGame.vue';
 import HomeHero from '~/components/home/HomeHero.vue';
-import HomeNews from '~/components/home/HomeNews.vue';
 import HomePlugins from '~/components/home/HomePlugins.vue';
 import HomeSaturday from '~/components/home/HomeSaturday.vue';
 import StoryChapter from '~/components/StoryChapter.vue';
@@ -25,7 +24,6 @@ const mocks = {
 
 <template>
   <HomeHero />
-  <HomeNews />
   <HomePlugins />
   <HomeCast />
   <WeekRail />

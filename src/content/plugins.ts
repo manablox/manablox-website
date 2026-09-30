@@ -40,7 +40,6 @@ export const plugins: FeaturePlugin[] = [
       'Design a whole website in the admin, no frontend code needed, and let Manablox serve it.',
     intro:
       'A space either keeps a code frontend of its own or becomes a designed site: shaped on a live canvas in the admin and served by a site process of its own.',
-    story: { hash: 'whats-new', label: 'What’s new' },
     docs: `${site.docs}/site/`,
     premium: true,
     worksWith: ['With AI: a theme and block designs drawn up from a description.'],
@@ -202,6 +201,18 @@ export const plugins: FeaturePlugin[] = [
 /** The license a plugin ships under: the premium plugins are commercial, the rest MIT. */
 export function licenseOf(plugin: FeaturePlugin): string {
   return plugin.premium ? 'Commercial license' : 'MIT license';
+}
+
+/**
+ * Whether the premium plugins are sold yet. Off, the site shows no prices, trials or portal
+ * links for them, but an "Available soon" badge and a way to ask for a try instead.
+ */
+export const premiumOnSale = false;
+
+/** A mail to the author about trying a premium plugin before it is sold. */
+export function premiumContact(name: string): string {
+  const subject = encodeURIComponent(`Trying out the Manablox ${name} plugin`);
+  return `mailto:${site.email}?subject=${subject}`;
 }
 
 /** What a premium plugin costs and where it is bought; prices from the build's catalogue. */

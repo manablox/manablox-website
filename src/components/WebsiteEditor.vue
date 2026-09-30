@@ -22,17 +22,17 @@ const points = [
 </script>
 
 <template>
-  <section id="whats-new" class="news" aria-labelledby="news-title">
-    <div class="wrap news-grid">
-      <div v-reveal class="news-copy">
+  <section id="visual-editor" class="editor" aria-labelledby="editor-title">
+    <div class="wrap editor-grid">
+      <div v-reveal class="editor-copy">
         <p class="kicker">
-          <span class="label">What's new</span>
+          <span class="label">Website plugin</span>
           <span class="badge">Alpha</span>
         </p>
-        <h2 id="news-title">The visual editor is here.</h2>
+        <h2 id="editor-title">The visual editor is here.</h2>
         <p class="lead">
-          Build a whole website right in the admin, no frontend code needed. Add the website
-          plugin, switch a space to a designed site, pick a look and shape it on a live canvas. This is the first alpha:
+          Build a whole website right in the admin, no frontend code needed. Switch a space to
+          a designed site, pick a look and shape it on a live canvas. This is the first alpha:
           try it on a fresh space and expect a few rough edges.
         </p>
         <ul class="points">
@@ -43,8 +43,6 @@ const points = [
         </ul>
         <div class="links">
           <a :href="`${site.docs}/site/`" class="link">Read the guide</a>
-          <RouterLink to="/plugins#website" class="link">The website plugin</RouterLink>
-          <RouterLink to="/changelog" class="link">Everything in {{ site.version }}</RouterLink>
         </div>
       </div>
 
@@ -92,14 +90,14 @@ const points = [
 </template>
 
 <style scoped>
-.news {
+.editor {
   padding-block: clamp(3.5rem, 2rem + 5vw, 6rem);
   background: var(--paper-2);
   border-block: 1.5px solid var(--line);
   scroll-margin-top: 7.5rem;
 }
 
-.news-grid {
+.editor-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
   gap: clamp(2.5rem, 5vw, 5rem);
@@ -129,7 +127,7 @@ const points = [
   text-transform: uppercase;
 }
 
-.news h2 {
+.editor h2 {
   font-size: var(--step-4);
   font-stretch: 75%;
 }
@@ -449,7 +447,7 @@ const points = [
 }
 
 @media (max-width: 960px) {
-  .news-grid {
+  .editor-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 }

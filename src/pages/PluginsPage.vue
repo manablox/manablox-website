@@ -2,13 +2,16 @@
 import CopyCommand from '~/components/CopyCommand.vue';
 import InlineCode from '~/components/InlineCode.vue';
 import PageIntro from '~/components/PageIntro.vue';
+import WebsiteEditor from '~/components/WebsiteEditor.vue';
 import {
   coreParts,
   licenseOf,
   pluginDocs,
   plugins,
+  premiumContact,
   premiumLinks,
   premiumOffer,
+  premiumOnSale,
 } from '~/content/plugins.ts';
 import { site } from '~/site.ts';
 
@@ -36,7 +39,9 @@ const steps = [
     Manablox starts as a lean core. Four first-party plugins add the rest: a designed
     website, AI, workflows and webhooks. Each works on its own, and some do more together.
     Workflows and webhooks are MIT licensed like the core; website and AI are commercial
-    premium plugins, free in development and with a free trial for production.
+    premium plugins,
+    <template v-if="premiumOnSale">free in development and with a free trial for production.</template>
+    <template v-else>available soon. <a :href="premiumContact('premium')">Contact me</a> if you want to try them out.</template>
     <template #after>
       <nav class="index" aria-label="Plugins">
         <a v-for="plugin in plugins" :key="plugin.id" :href="`#${plugin.id}`" :class="`t-${plugin.tone}`">
@@ -65,53 +70,65 @@ const steps = [
     </div>
   </section>
 
-  <section
-    v-for="plugin in plugins"
-    :id="plugin.id"
-    :key="plugin.id"
-    class="group"
-    :class="`t-${plugin.tone}`"
-    :aria-labelledby="`${plugin.id}-title`"
-  >
-    <div class="wrap group-grid">
-      <header class="group-head">
-        <span class="stamp" aria-hidden="true">{{ plugin.id }}</span>
-        <p class="package">{{ plugin.packageName }} · {{ licenseOf(plugin) }}</p>
-        <h2 :id="`${plugin.id}-title`">
-          {{ plugin.name }}
-          <span v-if="plugin.premium" class="premium-badge">Premium</span>
-        </h2>
-        <p>{{ plugin.intro }}</p>
-        <div v-if="plugin.premium" class="offer">
-          <p class="price">{{ premiumOffer(plugin.id).price }}</p>
-          <p class="offer-links">
-            <a :href="premiumOffer(plugin.id).buy" class="offer-trial">Start free trial</a>
-            <a :href="premiumOffer(plugin.id).buy" class="offer-buy">Buy</a>
+  <template v-for="plugin in plugins" :key="plugin.id">
+    <section
+      :id="plugin.id"
+      class="group"
+      :class="`t-${plugin.tone}`"
+      :aria-labelledby="`${plugin.id}-title`"
+    >
+      <div class="wrap group-grid">
+        <header class="group-head">
+          <span class="stamp" aria-hidden="true">{{ plugin.id }}</span>
+          <p class="package">{{ plugin.packageName }} · {{ licenseOf(plugin) }}</p>
+          <h2 :id="`${plugin.id}-title`">
+            {{ plugin.name }}
+            <span v-if="plugin.premium" class="premium-badge">Premium</span>
+            <span v-if="plugin.premium && !premiumOnSale" class="soon-badge">Available soon</span>
+          </h2>
+          <p>{{ plugin.intro }}</p>
+          <div v-if="plugin.premium && !premiumOnSale" class="offer offer--soon">
+            <p class="price">Available soon</p>
+            <p class="offer-note">
+              Contact me if you want to try it out: it runs on your own setup, and I would love
+              to hear what you build with it.
+            </p>
+            <p class="offer-links">
+              <a :href="premiumContact(plugin.name)" class="offer-trial">Contact me</a>
+            </p>
+          </div>
+          <div v-else-if="plugin.premium" class="offer">
+            <p class="price">{{ premiumOffer(plugin.id).price }}</p>
+            <p class="offer-links">
+              <a :href="premiumOffer(plugin.id).buy" class="offer-trial">Start free trial</a>
+              <a :href="premiumOffer(plugin.id).buy" class="offer-buy">Buy</a>
+            </p>
+            <p class="offer-note">
+              {{ premiumOffer(plugin.id).trial }}. Free in development: it runs without a key on
+              private hosts. <a href="#premium">How licenses work</a>
+            </p>
+          </div>
+          <ul class="with" aria-label="Together with other plugins">
+            <li v-for="line in plugin.worksWith" :key="line">{{ line }}</li>
+          </ul>
+          <code class="install">manablox plugin install {{ plugin.id }}</code>
+          <p class="links">
+            <a :href="plugin.docs" class="story-link">Read the docs</a>
+            <RouterLink v-if="plugin.story" :to="`/#${plugin.story.hash}`" class="story-link">
+              Read it in the story: {{ plugin.story.label }}
+            </RouterLink>
           </p>
-          <p class="offer-note">
-            {{ premiumOffer(plugin.id).trial }}. Free in development: it runs without a key on
-            private hosts. <a href="#premium">How licenses work</a>
-          </p>
-        </div>
-        <ul class="with" aria-label="Together with other plugins">
-          <li v-for="line in plugin.worksWith" :key="line">{{ line }}</li>
+        </header>
+        <ul class="cards">
+          <li v-for="item in plugin.items" :key="item.name" v-reveal class="card">
+            <h3><InlineCode :text="item.name" /></h3>
+            <p><InlineCode :text="item.text" /></p>
+          </li>
         </ul>
-        <code class="install">manablox plugin install {{ plugin.id }}</code>
-        <p class="links">
-          <a :href="plugin.docs" class="story-link">Read the docs</a>
-          <RouterLink v-if="plugin.story" :to="`/#${plugin.story.hash}`" class="story-link">
-            Read it in the story: {{ plugin.story.label }}
-          </RouterLink>
-        </p>
-      </header>
-      <ul class="cards">
-        <li v-for="item in plugin.items" :key="item.name" v-reveal class="card">
-          <h3><InlineCode :text="item.name" /></h3>
-          <p><InlineCode :text="item.text" /></p>
-        </li>
-      </ul>
-    </div>
-  </section>
+      </div>
+    </section>
+    <WebsiteEditor v-if="plugin.id === 'website'" />
+  </template>
 
   <section id="premium" class="premium" aria-labelledby="premium-title">
     <div class="wrap premium-grid">
@@ -121,16 +138,25 @@ const steps = [
         <p>
           Manablox is open source under the MIT license: the core, the admin, the CLI, the
           SDKs, the workflows and webhooks plugins, and the license plugin that checks the
-          keys. The website and AI plugins are commercial, under their own license. They are
-          paid by subscription, monthly or yearly, each on its own or both as a bundle, with a
-          free trial of each plugin. On your laptop and on staging with private hosts they run
-          without a key. In production, without a key they stay installed but locked; your data
-          stays either way, and designed sites keep rendering.
+          keys. The website and AI plugins are commercial, under their own license.
+          <template v-if="premiumOnSale">
+            They are paid by subscription, monthly or yearly, each on its own or both as a
+            bundle, with a free trial of each plugin.
+          </template>
+          <template v-else>
+            They are available soon; until then, contact me if you want to try them out.
+          </template>
+          On your laptop and on staging with private hosts they run without a key. In
+          production, without a key they stay installed but locked; your data stays either way,
+          and designed sites keep rendering.
         </p>
         <p class="docs-links">
           <a :href="site.github">The MIT source on GitHub</a>
-          <a :href="premiumLinks.pricing">Prices</a>
-          <a :href="premiumLinks.bundle">Buy both as a bundle</a>
+          <template v-if="premiumOnSale">
+            <a :href="premiumLinks.pricing">Prices</a>
+            <a :href="premiumLinks.bundle">Buy both as a bundle</a>
+          </template>
+          <a v-else :href="premiumContact('premium')">Contact me to try them out</a>
           <a :href="premiumLinks.guide">Licenses in the user guide</a>
         </p>
       </div>
@@ -169,7 +195,7 @@ const steps = [
       </ol>
       <p class="note">
         <InlineCode
-          text="`manablox plugin disable ai --space blog` switches a plugin off for one space and `enable` back on. The ids are `website`, `ai`, `workflows` and `webhooks`. `manablox license buy` opens the checkout for the premium plugins and writes the key into `.env`."
+          :text="`\`manablox plugin disable ai --space blog\` switches a plugin off for one space and \`enable\` back on. The ids are \`website\`, \`ai\`, \`workflows\` and \`webhooks\`.${premiumOnSale ? ' \`manablox license buy\` opens the checkout for the premium plugins and writes the key into \`.env\`.' : ''}`"
         />
       </p>
       <p class="docs">
@@ -429,6 +455,21 @@ const steps = [
   vertical-align: middle;
 }
 
+.soon-badge {
+  display: inline-block;
+  margin-left: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--c);
+  color: var(--on);
+  box-shadow: 2px 2px 0 var(--edge-shadow);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  vertical-align: middle;
+}
+
 .offer {
   margin-top: 1.1rem;
   padding: 1rem 1.1rem;
@@ -468,6 +509,16 @@ const steps = [
 .offer-buy {
   box-shadow: inset 0 0 0 1.5px var(--edge);
   color: var(--ink);
+}
+
+.offer--soon {
+  box-shadow:
+    inset 0 0 0 1.5px var(--edge),
+    4px 4px 0 var(--c);
+}
+
+.offer--soon .offer-note {
+  margin-top: 0.4rem;
 }
 
 .group-head .offer-note {

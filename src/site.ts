@@ -17,6 +17,8 @@ export const site = {
   gameBuilds: 'https://daspete.itch.io/manablox',
   // Plausible, self hosted, at `ANALYTICS_ORIGIN`. It loads only after a visitor accepts.
   analytics: `${__ANALYTICS_ORIGIN__}/js/pa-uftfGVEgTyuOc091Hyz_1.js`,
+  /** Where people reach the author, as on the imprint. */
+  email: 'daspetemail@gmail.com',
   /** The license portal: buying, trials and keys of the premium plugins. */
   portal: __LICENSE_PORTAL__,
   createCommand: 'pnpm dlx @manablox/cli create my-cms',

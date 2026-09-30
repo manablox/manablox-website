@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { premiumOnSale } from '~/content/plugins.ts';
 import { site } from '~/site.ts';
 import BrandMark from './BrandMark.vue';
 </script>
@@ -32,7 +33,7 @@ import BrandMark from './BrandMark.vue';
         <a :href="site.docs">Developer docs</a>
         <a :href="site.github">Source on GitHub</a>
         <a :href="site.npm">@manablox/cli on npm</a>
-        <a :href="site.portal">License portal</a>
+        <a v-if="premiumOnSale" :href="site.portal">License portal</a>
       </nav>
     </div>
 

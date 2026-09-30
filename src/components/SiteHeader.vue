@@ -29,7 +29,7 @@ watch(
         <RouterLink to="/features">Features</RouterLink>
         <RouterLink to="/plugins">Plugins</RouterLink>
         <RouterLink to="/changelog">Changelog</RouterLink>
-        <a :href="site.docs">Docs</a>
+        <a :href="site.guide">Docs</a>
         <RouterLink to="/download" class="cta">Download</RouterLink>
       </nav>
 

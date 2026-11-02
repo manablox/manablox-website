@@ -168,7 +168,8 @@ async function page(url, { canonical }) {
     ...(canonical ? [structuredData(url, title, description)] : []),
     ...preloads(modules),
   ].join('\n    ');
-  return template.replace('<!--app-head-->', head).replace('<!--app-html-->', html);
+  // Replacer functions: in a plain string, a `$&` in a code sample would be expanded.
+  return template.replace('<!--app-head-->', () => head).replace('<!--app-html-->', () => html);
 }
 
 for (const url of prerenderPaths) {

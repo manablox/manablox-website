@@ -27,20 +27,16 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 
 COPY . .
 # Absolute URLs (canonical links, the sitemap) need the deployed origin at build time. The
-# website is only ever deployed at one origin, so that is the default, and it links the
-# production license portal. LICENSE_API, the API it reads the premium plugins' prices from,
-# has no default: empty, the build fetches nothing and the pages say "Paid plugin".
+# website is only ever deployed at one origin, so that is the default.
 # CHANGELOG_URL empty is the CMS repository's CHANGELOG.md on main (build/changelog.ts);
 # CHANGELOG_STRICT=1 (release.yml) fails the build when it cannot be fetched instead of
 # using the bundled copy. ANALYTICS_ORIGIN is where the site loads the analytics script
 # from; give the container the same value at runtime.
 ARG WEBSITE_URL=https://manablox.io
-ARG LICENSE_PORTAL_URL=https://licenses.manablox.io
-ARG LICENSE_API
 ARG CHANGELOG_URL
 ARG CHANGELOG_STRICT
 ARG ANALYTICS_ORIGIN
-RUN for name in WEBSITE_URL LICENSE_PORTAL_URL LICENSE_API CHANGELOG_URL CHANGELOG_STRICT ANALYTICS_ORIGIN; do \
+RUN for name in WEBSITE_URL CHANGELOG_URL CHANGELOG_STRICT ANALYTICS_ORIGIN; do \
       eval "[ -n \"\$$name\" ]" || unset "$name"; \
     done \
  && pnpm build \

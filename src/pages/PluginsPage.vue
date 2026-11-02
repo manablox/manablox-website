@@ -3,16 +3,7 @@ import CopyCommand from '~/components/CopyCommand.vue';
 import InlineCode from '~/components/InlineCode.vue';
 import PageIntro from '~/components/PageIntro.vue';
 import WebsiteEditor from '~/components/WebsiteEditor.vue';
-import {
-  coreParts,
-  licenseOf,
-  pluginDocs,
-  plugins,
-  premiumContact,
-  premiumLinks,
-  premiumOffer,
-  premiumOnSale,
-} from '~/content/plugins.ts';
+import { coreParts, pluginDocs, plugins } from '~/content/plugins.ts';
 import { site } from '~/site.ts';
 
 const steps = [
@@ -38,16 +29,13 @@ const steps = [
   <PageIntro label="Plugins" title="Take only what you need." title-id="plugins-title">
     Manablox starts as a lean core. Four first-party plugins add the rest: a designed
     website, AI, workflows and webhooks. Each works on its own, and some do more together.
-    Workflows and webhooks are MIT licensed like the core; website and AI are commercial
-    premium plugins,
-    <template v-if="premiumOnSale">free in development and with a free trial for production.</template>
-    <template v-else>available soon. <a :href="premiumContact('premium')">Contact me</a> if you want to try them out.</template>
+    All of them are MIT licensed and live in one repository with the core.
     <template #after>
       <nav class="index" aria-label="Plugins">
         <a v-for="plugin in plugins" :key="plugin.id" :href="`#${plugin.id}`" :class="`t-${plugin.tone}`">
           {{ plugin.name }}
         </a>
-        <a href="#premium" class="t-night">Premium plugins</a>
+        <a href="#open-source" class="t-night">Open source</a>
         <a href="#get-them" class="t-night">Install and remove</a>
       </nav>
     </template>
@@ -80,34 +68,9 @@ const steps = [
       <div class="wrap group-grid">
         <header class="group-head">
           <span class="stamp" aria-hidden="true">{{ plugin.id }}</span>
-          <p class="package">{{ plugin.packageName }} · {{ licenseOf(plugin) }}</p>
-          <h2 :id="`${plugin.id}-title`">
-            {{ plugin.name }}
-            <span v-if="plugin.premium" class="premium-badge">Premium</span>
-            <span v-if="plugin.premium && !premiumOnSale" class="soon-badge">Available soon</span>
-          </h2>
+          <p class="package">{{ plugin.packageName }} · MIT license</p>
+          <h2 :id="`${plugin.id}-title`">{{ plugin.name }}</h2>
           <p>{{ plugin.intro }}</p>
-          <div v-if="plugin.premium && !premiumOnSale" class="offer offer--soon">
-            <p class="price">Available soon</p>
-            <p class="offer-note">
-              Contact me if you want to try it out: it runs on your own setup, and I would love
-              to hear what you build with it.
-            </p>
-            <p class="offer-links">
-              <a :href="premiumContact(plugin.name)" class="offer-trial">Contact me</a>
-            </p>
-          </div>
-          <div v-else-if="plugin.premium" class="offer">
-            <p class="price">{{ premiumOffer(plugin.id).price }}</p>
-            <p class="offer-links">
-              <a :href="premiumOffer(plugin.id).buy" class="offer-trial">Start free trial</a>
-              <a :href="premiumOffer(plugin.id).buy" class="offer-buy">Buy</a>
-            </p>
-            <p class="offer-note">
-              {{ premiumOffer(plugin.id).trial }}. Free in development: it runs without a key on
-              private hosts. <a href="#premium">How licenses work</a>
-            </p>
-          </div>
           <ul class="with" aria-label="Together with other plugins">
             <li v-for="line in plugin.worksWith" :key="line">{{ line }}</li>
           </ul>
@@ -130,54 +93,23 @@ const steps = [
     <WebsiteEditor v-if="plugin.id === 'website'" />
   </template>
 
-  <section id="premium" class="premium" aria-labelledby="premium-title">
-    <div class="wrap premium-grid">
-      <div>
-        <p class="label">Premium plugins</p>
-        <h2 id="premium-title">Website and AI need a license key in production.</h2>
-        <p>
-          Manablox is open source under the MIT license: the core, the admin, the CLI, the
-          SDKs, the workflows and webhooks plugins, and the license plugin that checks the
-          keys. The website and AI plugins are commercial, under their own license.
-          <template v-if="premiumOnSale">
-            They are paid by subscription, monthly or yearly, each on its own or both as a
-            bundle, with a free trial of each plugin.
-          </template>
-          <template v-else>
-            They are available soon; until then, contact me if you want to try them out.
-          </template>
-          On your laptop and on staging with private hosts they run without a key. In
-          production, without a key they stay installed but locked; your data stays either way,
-          and designed sites keep rendering.
-        </p>
-        <p class="docs-links">
-          <a :href="site.github">The MIT source on GitHub</a>
-          <template v-if="premiumOnSale">
-            <a :href="premiumLinks.pricing">Prices</a>
-            <a :href="premiumLinks.bundle">Buy both as a bundle</a>
-          </template>
-          <a v-else :href="premiumContact('premium')">Contact me to try them out</a>
-          <a :href="premiumLinks.guide">Licenses in the user guide</a>
-        </p>
-      </div>
-      <ul class="rules" aria-label="How licenses work">
-        <li v-reveal>
-          <h3>One key per subscription</h3>
-          <p>A subscription holds one plugin or the bundle. An instance can hold several keys, and gets what all of them cover.</p>
-        </li>
-        <li v-reveal>
-          <h3>A seat per production instance</h3>
-          <p>Each seat of a subscription covers one public production instance. Move a key by deactivating the old instance.</p>
-        </li>
-        <li v-reveal>
-          <h3>Free in development</h3>
-          <p>Your laptop and staging on private hosts run the premium plugins without a key. A key works there too, and takes no seat.</p>
-        </li>
-        <li v-reveal>
-          <h3>Checked offline</h3>
-          <p>A signed lease is checked on the instance and refreshed once a day. When the license server cannot be reached, nothing locks for up to two weeks.</p>
-        </li>
-      </ul>
+  <section id="open-source" class="open-source" aria-labelledby="open-source-title">
+    <div class="wrap">
+      <p class="label">Open source</p>
+      <h2 id="open-source-title">Every plugin is MIT licensed.</h2>
+      <p>
+        Manablox is open source under the MIT license: the core, the admin, the CLI, the SDKs
+        and all four plugins. There is no license key and no paid tier, and nothing locks in
+        production. Run them wherever you like.
+      </p>
+      <p>
+        It all lives in one repository and is released together, so a plugin always matches
+        the core beside it. The <code>cms-api</code> Docker image runs all four, and the
+        <code>site</code> image serves your designed sites.
+      </p>
+      <p class="docs-links">
+        <a :href="site.github">The source on GitHub</a>
+      </p>
     </div>
   </section>
 
@@ -195,7 +127,7 @@ const steps = [
       </ol>
       <p class="note">
         <InlineCode
-          :text="`\`manablox plugin disable ai --space blog\` switches a plugin off for one space and \`enable\` back on. The ids are \`website\`, \`ai\`, \`workflows\` and \`webhooks\`.${premiumOnSale ? ' \`manablox license buy\` opens the checkout for the premium plugins and writes the key into \`.env\`.' : ''}`"
+          text="`manablox plugin disable ai --space blog` switches a plugin off for one space and `enable` back on. The ids are `website`, `ai`, `workflows` and `webhooks`."
         />
       </p>
       <p class="docs">
@@ -440,116 +372,23 @@ const steps = [
   text-underline-offset: 4px;
 }
 
-/* The premium badge, the price and the portal links under a paid plugin's name. */
-.premium-badge {
-  display: inline-block;
-  margin-left: 0.4rem;
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  background: var(--solid);
-  color: var(--solid-ink);
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  vertical-align: middle;
-}
-
-.soon-badge {
-  display: inline-block;
-  margin-left: 0.3rem;
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  background: var(--c);
-  color: var(--on);
-  box-shadow: 2px 2px 0 var(--edge-shadow);
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  vertical-align: middle;
-}
-
-.offer {
-  margin-top: 1.1rem;
-  padding: 1rem 1.1rem;
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  box-shadow: inset 0 0 0 1.5px var(--edge);
-}
-
-.offer .price {
-  margin: 0;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: var(--step-1);
-  color: var(--ink);
-}
-
-.offer-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  margin-top: 0.8rem;
-}
-
-.offer-links a {
-  padding: 0.5rem 0.95rem;
-  border-radius: 999px;
-  font-weight: 800;
-  font-size: 0.92rem;
-  text-decoration: none;
-}
-
-.offer-trial {
-  background: var(--c);
-  color: var(--on-accent);
-}
-
-.offer-buy {
-  box-shadow: inset 0 0 0 1.5px var(--edge);
-  color: var(--ink);
-}
-
-.offer--soon {
-  box-shadow:
-    inset 0 0 0 1.5px var(--edge),
-    4px 4px 0 var(--c);
-}
-
-.offer--soon .offer-note {
-  margin-top: 0.4rem;
-}
-
-.group-head .offer-note {
-  margin-top: 0.8rem;
-  font-size: 0.9rem;
-  line-height: 1.5;
-}
-
-.premium {
+.open-source {
   padding-block: clamp(3rem, 2rem + 4vw, 5rem);
   border-top: 1.5px solid var(--line);
   background: var(--paper-2);
   scroll-margin-top: 4.5rem;
 }
 
-.premium-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  gap: clamp(1.5rem, 4vw, 4rem);
-  align-items: start;
-}
-
-.premium .label {
+.open-source .label {
   margin-bottom: 0.8rem;
 }
 
-.premium h2 {
+.open-source h2 {
   font-size: var(--step-3);
 }
 
-.premium p {
+.open-source p:not(.label) {
+  max-width: 44rem;
   margin-top: 0.9rem;
   color: var(--ink-soft);
 }
@@ -566,35 +405,8 @@ const steps = [
   text-underline-offset: 4px;
 }
 
-.rules {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
-  gap: 1rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.rules li {
-  padding: 1.2rem 1.25rem;
-  border-radius: var(--radius);
-  background: var(--surface);
-  box-shadow: inset 0 0 0 1.5px var(--edge);
-}
-
-.rules h3 {
-  font-size: var(--step-1);
-}
-
-.rules p {
-  margin-top: 0.5rem;
-  font-size: 0.95rem;
-  line-height: 1.55;
-}
-
 @media (max-width: 860px) {
-  .core-grid,
-  .premium-grid {
+  .core-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 }

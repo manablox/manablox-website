@@ -26,8 +26,8 @@ Usage: scripts/docker-build.sh [options]
   --push             push the image after building it (log in to the registry first)
   -h, --help         this message
 
-Build arguments of the site (WEBSITE_URL, LICENSE_PORTAL_URL, LICENSE_API, CHANGELOG_URL,
-CHANGELOG_STRICT, ANALYTICS_ORIGIN) are passed on from the environment when set.
+Build arguments of the site (WEBSITE_URL, CHANGELOG_URL, CHANGELOG_STRICT, ANALYTICS_ORIGIN)
+are passed on from the environment when set.
 USAGE
 }
 
@@ -63,7 +63,7 @@ if [ -n "$registry" ]; then
   esac
   log "installing @manablox/* from $registry"
 fi
-for name in WEBSITE_URL LICENSE_PORTAL_URL LICENSE_API CHANGELOG_URL CHANGELOG_STRICT ANALYTICS_ORIGIN; do
+for name in WEBSITE_URL CHANGELOG_URL CHANGELOG_STRICT ANALYTICS_ORIGIN; do
   if [ -n "${!name:-}" ]; then args+=(--build-arg "$name=${!name}"); fi
 done
 

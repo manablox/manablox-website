@@ -9,17 +9,6 @@ declare global {
   const __CMS_VERSION__: string;
   /** The analytics server's origin, injected by `vite.config.ts` (`ANALYTICS_ORIGIN`). */
   const __ANALYTICS_ORIGIN__: string;
-  /** The license portal's origin, injected by `vite.config.ts` (`LICENSE_PORTAL_URL`). */
-  const __LICENSE_PORTAL__: string;
-  /**
-   * Per premium plugin, what the license server's catalogue said at build time
-   * (`build/prices.ts`, `LICENSE_API`): the lowest
-   * monthly price, formatted, and the trial length. Null when it was not asked or not reached.
-   */
-  const __PREMIUM_OFFERS__: Record<
-    string,
-    { fromMonthly: string | null; trialDays: number | null }
-  >;
 
   interface Window {
     /**

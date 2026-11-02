@@ -10,8 +10,8 @@ route to its own file (`index.html`, `features.html`, `plugins.html`, `download.
 `changelog.html`, `imprint.html`, `404.html`) plus `sitemap.xml` and `robots.txt`. The
 browser hydrates the HTML, so the page works before any script runs.
 
-This repository is private and proprietary (see [LICENSE](./LICENSE)). The CMS it
-describes lives in [manablox/manablox-cms](https://github.com/manablox/manablox-cms).
+This repository is MIT licensed (see [LICENSE](./LICENSE)). The CMS it describes lives in
+[manablox/manablox-cms](https://github.com/manablox/manablox-cms).
 
 ## Development
 
@@ -93,8 +93,6 @@ The build reads these from the environment. The dev stack takes them from `.env`
 | Variable | Default | |
 | --- | --- | --- |
 | `WEBSITE_URL` | `http://localhost:3005` (image: `https://manablox.io`) | The deployed origin. It only reaches canonical links, the structured data and the sitemap |
-| `LICENSE_PORTAL_URL` | `https://licenses.manablox.io` | The portal the "Start free trial", "Buy" and pricing links open (`/buy?products=ai`, `/pricing`) |
-| `LICENSE_API` | none | The license server's API (`https://licenses.manablox.io/api`). The build reads `GET /v1/catalog` from it and shows "from €X/month", the lowest monthly price with yearly plans divided by twelve, and the trial length. Unset, unreachable or without a price, the page says "Paid plugin" and names no number |
 | `CHANGELOG_URL` | the CMS's `CHANGELOG.md` on main | Where the changelog page reads from, see below. `off` uses the bundled copy without asking |
 | `CHANGELOG_STRICT` | unset | `1` fails the build when the changelog cannot be fetched or holds no release, instead of using the bundled copy. `release.yml` sets it; CI and development do not |
 | `ANALYTICS_ORIGIN` | `https://analytics.dev.alpenstudios.com` | The analytics server (Plausible) the site loads its script from, after a visitor accepts. The image reads it again when the container starts, see below |
@@ -117,10 +115,8 @@ it with each CMS release.
 
 `pnpm build` fetches once, before the client and the server bundles are built
 (`node build/changelog.ts --fetch`, into `node_modules/.cache/manablox-website/`); both
-read that file, so they always show the same changelog and version. The prices take the
-same way (`node build/prices.ts --fetch`, `prices.json` next to it), so the prerendered
-page and the one the client hydrates name the same price. The dev server fetches both when
-it starts. A bare `vite build` without those steps fails and says so.
+read that file, so they always show the same changelog and version. The dev server fetches
+it when it starts. A bare `vite build` without that step fails and says so.
 
 Relative links in the changelog open the file in the CMS repository on GitHub.
 
@@ -136,7 +132,7 @@ arguments, passed on from the environment.
 ```sh
 pnpm docker:build                          # ghcr.io/manablox/website:0.50.0
 pnpm docker:build --tag test
-LICENSE_API=https://licenses.manablox.io/api pnpm docker:build --prefix my.registry/me --push
+WEBSITE_URL=https://staging.example.com pnpm docker:build --prefix my.registry/me --push
 docker run --rm -p 8080:80 ghcr.io/manablox/website:0.50.0
 ```
 
@@ -163,9 +159,8 @@ container.
 `.github/workflows/ci.yml` runs lint, knip and the typecheck, the build with the prerender
 and the link check, `pnpm audit`, and builds the image without pushing it, then smoke-tests
 it (the pages, a 404, the security headers). `.github/workflows/release.yml`, started by
-hand, builds the image with the repository variables `WEBSITE_URL`, `LICENSE_PORTAL_URL`
-and `LICENSE_API` and `CHANGELOG_STRICT=1`, and pushes it to ghcr.io with the version tags
-(and `latest`).
+hand, builds the image with the repository variable `WEBSITE_URL` and `CHANGELOG_STRICT=1`,
+and pushes it to ghcr.io with the version tags (and `latest`).
 
 ## Colour
 
@@ -197,12 +192,11 @@ Three rules keep components working in both:
 | --- | --- |
 | `src/content/week.ts` | The story on the home page, one chapter per day. Keep it short: the detail belongs in `features.ts` |
 | `src/content/features.ts` | The inventory of the core on `/features`, and what is not built |
-| `src/content/plugins.ts` | The first-party plugins (website, AI, workflows, webhooks): the cards on the home page and `/features`, and the detail on `/plugins`, with their license, the premium badge, price and portal links of the paid ones. A plugin's features belong here, not in `features.ts` |
+| `src/content/plugins.ts` | The first-party plugins (website, AI, workflows, webhooks): the cards on the home page and `/features`, and the detail on `/plugins`. A plugin's features belong here, not in `features.ts` |
 | `src/content/changelog.ts` | The changelog's Markdown parsed into releases for `/changelog` |
 | `src/content/cms-changelog.md` | The bundled copy of the CMS changelog |
 | `build/changelog.ts` | Fetches the CMS changelog at build time, with the bundled copy as fallback |
-| `build/prices.ts` | Fetches the premium plugins' prices from `LICENSE_API` at build time, "Paid plugin" without them |
-| `src/site.ts` | Every outbound link: GitHub, the docs, the user guide, npm, the license portal, the install commands |
+| `src/site.ts` | Every outbound link: GitHub, the docs, the user guide, npm, the install commands |
 | `src/components/mocks/` | The product illustrations, one per day, in plain HTML and CSS |
 | `src/router.ts` | Routes, their titles and descriptions, and the paths to prerender |
 | `scripts/prerender.mjs` | Renders every route, the meta tags, the structured data, the sitemap and robots.txt |
@@ -214,7 +208,7 @@ Copy may wrap `code` in backticks; `InlineCode.vue` renders those spans.
 ## Writing for these pages
 
 - Every claim has to be true of the current release. Check it against the developer documentation (<https://dev.manablox.io>) and the CLI (`manablox --help`) before it goes in; if a feature is not built, it belongs in `notBuilt`, not in the copy.
-- Licensing: the CMS is open source under the MIT license, the workflows, webhooks and license plugins included. The website and AI plugins are commercial. Say which is which wherever a plugin is named with its package.
+- Licensing: the CMS is open source under the MIT license, every plugin included.
 - Name things by what people see and do in the admin, not by how they are implemented.
 - The cast (Max, Anna, Julia) never gets pronouns; the sentences use their names.
 

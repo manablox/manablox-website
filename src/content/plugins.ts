@@ -18,12 +18,6 @@ export interface FeaturePlugin {
   /** Where it shows up on the home page: a chapter of the week, or the news. */
   story?: { hash: string; label: string };
   docs: string;
-  /**
-   * A paid plugin under the commercial license: free in development (private hosts, no key),
-   * in production it needs a license key, bought per subscription on the license portal. The
-   * others are MIT licensed like the core.
-   */
-  premium?: boolean;
   /** What changes when another plugin is there too. */
   worksWith: string[];
   items: PluginFeature[];
@@ -41,7 +35,6 @@ export const plugins: FeaturePlugin[] = [
     intro:
       'A space either keeps a code frontend of its own or becomes a designed site: shaped on a live canvas in the admin and served by a site process of its own.',
     docs: `${site.docs}/site/`,
-    premium: true,
     worksWith: ['With AI: a theme and block designs drawn up from a description.'],
     items: [
       {
@@ -84,7 +77,6 @@ export const plugins: FeaturePlugin[] = [
     intro: 'Models you choose, keys you own, and nothing that happens without a person saying yes.',
     story: { hash: 'wednesday', label: 'Wednesday' },
     docs: `${site.docs}/admin/ai/#the-ai-plugin`,
-    premium: true,
     worksWith: [
       'With workflows: an AI step on the canvas, and workflows designed from a description.',
       'With the website: theme and block design.',
@@ -197,41 +189,6 @@ export const plugins: FeaturePlugin[] = [
     ],
   },
 ];
-
-/** The license a plugin ships under: the premium plugins are commercial, the rest MIT. */
-export function licenseOf(plugin: FeaturePlugin): string {
-  return plugin.premium ? 'Commercial license' : 'MIT license';
-}
-
-/**
- * Whether the premium plugins are sold yet. Off, the site shows no prices, trials or portal
- * links for them, but an "Available soon" badge and a way to ask for a try instead.
- */
-export const premiumOnSale = false;
-
-/** A mail to the author about trying a premium plugin before it is sold. */
-export function premiumContact(name: string): string {
-  const subject = encodeURIComponent(`Trying out the Manablox ${name} plugin`);
-  return `mailto:${site.email}?subject=${subject}`;
-}
-
-/** What a premium plugin costs and where it is bought; prices from the build's catalogue. */
-export function premiumOffer(id: FeaturePlugin['id']) {
-  const offer = __PREMIUM_OFFERS__[id] ?? { fromMonthly: null, trialDays: null };
-  return {
-    price: offer.fromMonthly ? `from ${offer.fromMonthly}/month` : 'Paid plugin',
-    trial: offer.trialDays ? `${offer.trialDays}-day free trial` : 'Free trial',
-    buy: `${site.portal}/buy?products=${id}`,
-  };
-}
-
-/** Where the premium plugins are priced, bought and explained. */
-export const premiumLinks = {
-  pricing: `${site.portal}/pricing`,
-  bundle: `${site.portal}/buy?products=ai,website`,
-  /** The user guide's page on trials, buying, keys and what happens when a license ends. */
-  guide: `${site.guide}/your-project/premium-plugins/`,
-};
 
 /** What every instance has, with or without plugins. */
 export const coreParts = [

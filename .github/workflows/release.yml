@@ -21,8 +21,7 @@ permissions:
 
 jobs:
   # ghcr.io/manablox/website at the version in package.json. The build reads the production
-  # origin, the license portal and the license API from the repository variables, and fails
-  # when the CMS changelog cannot be fetched (CHANGELOG_STRICT) rather than shipping the
+  # origin from the repository variables, and fails when the CMS changelog cannot be fetched (CHANGELOG_STRICT) rather than shipping the
   # bundled copy.
   image:
     name: image - website
@@ -62,7 +61,5 @@ jobs:
           provenance: mode=max
           build-args: |
             WEBSITE_URL=${{ vars.WEBSITE_URL || 'https://manablox.io' }}
-            LICENSE_PORTAL_URL=${{ vars.LICENSE_PORTAL_URL || 'https://licenses.manablox.io' }}
-            LICENSE_API=${{ vars.LICENSE_API }}
             CHANGELOG_STRICT=1
           cache-from: type=gha,scope=website

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { plugins, premiumOnSale } from '~/content/plugins.ts';
+import { plugins } from '~/content/plugins.ts';
 </script>
 
 <template>
@@ -7,12 +7,8 @@ import { plugins, premiumOnSale } from '~/content/plugins.ts';
     <li v-for="plugin in plugins" :key="plugin.id" v-reveal :class="`t-${plugin.tone}`">
       <RouterLink :to="`/plugins#${plugin.id}`" class="plugin-card">
         <span class="stamp" aria-hidden="true">{{ plugin.id }}</span>
-        <span v-if="plugin.premium && !premiumOnSale" class="soon-badge">Available soon</span>
         <span class="package">{{ plugin.packageName }}</span>
-        <h3>
-          {{ plugin.name }}
-          <span v-if="plugin.premium" class="premium-badge">Premium</span>
-        </h3>
+        <h3>{{ plugin.name }}</h3>
         <p>{{ plugin.pitch }}</p>
         <span class="more">What it does <span aria-hidden="true">→</span></span>
       </RouterLink>
@@ -96,36 +92,6 @@ import { plugins, premiumOnSale } from '~/content/plugins.ts';
 h3 {
   margin-top: 0.35rem;
   font-size: var(--step-2);
-}
-
-.premium-badge {
-  display: inline-block;
-  margin-left: 0.3rem;
-  padding: 0.15rem 0.55rem;
-  border-radius: 999px;
-  background: var(--solid);
-  color: var(--solid-ink);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  vertical-align: middle;
-}
-
-/* Top right, level with the stamp. */
-.soon-badge {
-  position: absolute;
-  top: 1.35rem;
-  right: 1.35rem;
-  padding: 0.15rem 0.55rem;
-  border-radius: 999px;
-  background: var(--c);
-  color: var(--on-accent);
-  box-shadow: 2px 2px 0 var(--edge-shadow);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
 }
 
 p {

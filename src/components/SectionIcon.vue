@@ -93,7 +93,7 @@ defineProps<{ name: SectionIcon }>();
       <path d="M6 8h12v4a6 6 0 0 1-12 0z" />
       <path d="M12 18v4" />
     </template>
-    <template v-else-if="name === 'premium'">
+    <template v-else-if="name === 'plugins'">
       <path d="M6 3h12l4 6-10 12L2 9z" />
       <path d="M2 9h20" />
       <path d="M12 21L8 9l4-6 4 6z" />

@@ -1,7 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
-  // Knip's vite plugin would load vite.config.ts, which fetches the changelog and the
-  // prices; the entries are listed here instead.
+  // Knip's vite plugin would load vite.config.ts, which fetches the changelog; the entries
+  // are listed here instead.
   "vite": false,
   "entry": [
     "vite.config.ts",

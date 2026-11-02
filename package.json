@@ -2,7 +2,7 @@
   "name": "manablox-website",
   "version": "0.50.0",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "description": "The Manablox marketing website, manablox.io",
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "node build/changelog.ts --fetch && node build/prices.ts --fetch && vite build --ssrManifest && vite build --ssr src/entry-server.ts --outDir dist-ssr && node scripts/prerender.mjs",
+    "build": "node build/changelog.ts --fetch && vite build --ssrManifest && vite build --ssr src/entry-server.ts --outDir dist-ssr && node scripts/prerender.mjs",
     "preview": "vite preview",
     "links": "node scripts/check-links.mjs dist",
     "links:cross": "node scripts/check-external-docs-links.mjs dist",

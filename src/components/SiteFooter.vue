@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { premiumOnSale } from '~/content/plugins.ts';
 import { site } from '~/site.ts';
 import BrandMark from './BrandMark.vue';
 </script>
@@ -14,7 +13,7 @@ import BrandMark from './BrandMark.vue';
         </RouterLink>
         <p>
           A headless CMS you install with one command and run wherever you like. Open source
-          under the MIT license; the website and AI plugins are commercial.
+          under the MIT license, every plugin included.
         </p>
       </div>
 
@@ -33,7 +32,6 @@ import BrandMark from './BrandMark.vue';
         <a :href="site.docs">Developer docs</a>
         <a :href="site.github">Source on GitHub</a>
         <a :href="site.npm">@manablox/cli on npm</a>
-        <a v-if="premiumOnSale" :href="site.portal">License portal</a>
       </nav>
     </div>
 

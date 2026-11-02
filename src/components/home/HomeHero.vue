@@ -28,7 +28,7 @@ import { site } from '~/site.ts';
           <li>Postgres or SQLite</li>
           <li>REST and GraphQL</li>
           <li>Plugins you pick</li>
-          <li>MIT-licensed core</li>
+          <li>MIT licensed, plugins too</li>
         </ul>
       </div>
       <HeroStack />

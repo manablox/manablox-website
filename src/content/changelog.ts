@@ -25,7 +25,7 @@ export type SectionIcon =
   | 'hosting'
   | 'running'
   | 'extend'
-  | 'premium'
+  | 'plugins'
   | 'other';
 
 /** A list entry; a leading **bold** run becomes its title. */
@@ -107,7 +107,7 @@ const ICONS: [RegExp, SectionIcon][] = [
   [/hosting|provider/, 'hosting'],
   [/running|operat|database/, 'running'],
   [/extend|plugin authors|developer/, 'extend'],
-  [/premium/, 'premium'],
+  [/optional plugins/, 'plugins'],
 ];
 
 function iconFor(title: string): SectionIcon {

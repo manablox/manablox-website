@@ -2,7 +2,6 @@
 import CopyCommand from '~/components/CopyCommand.vue';
 import InlineCode from '~/components/InlineCode.vue';
 import PageIntro from '~/components/PageIntro.vue';
-import { premiumContact, premiumLinks, premiumOnSale } from '~/content/plugins.ts';
 import { site } from '~/site.ts';
 
 const steps = [
@@ -146,24 +145,14 @@ const frameworks = [
           <CopyCommand command="npx manablox migrate && npx manablox start" tone="dark" />
         </div>
         <div v-reveal class="other-card">
-          <h3>Premium plugins</h3>
-          <template v-if="premiumOnSale">
-            <p>
-              Website and AI are commercial plugins. They run without a key on your own
-              computer; production needs a license key. This opens the checkout in your browser, starts a free trial or a subscription, and writes the key
-              into <code>.env</code>. A key bought earlier goes in with
-              <code>manablox license add</code>.
-            </p>
-            <CopyCommand command="pnpm exec manablox license buy" tone="dark" />
-          </template>
-          <p v-else>
-            Website and AI are commercial plugins, available soon. They run without a key on
-            your own computer. Contact me if you want to try them out.
+          <h3>Add a plugin</h3>
+          <p>
+            Website, AI, workflows and webhooks are all MIT licensed, like the core. Install
+            one whenever you want it.
           </p>
+          <CopyCommand command="pnpm exec manablox plugin install ai" tone="dark" />
           <p class="other-links">
-            <a v-if="premiumOnSale" :href="premiumLinks.pricing">Prices</a>
-            <a v-else :href="premiumContact('premium')">Contact me</a>
-            <RouterLink to="/plugins#premium">How licenses work</RouterLink>
+            <RouterLink to="/plugins">What each plugin does</RouterLink>
           </p>
         </div>
       </div>
